@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/dtm-labs/dtm/dtmutil"
-	"github.com/dtm-labs/github.com/guanyang-lab/dtm/dtmcli"
 	"github.com/gin-gonic/gin"
+	"github.com/guanyang-lab/dtm/dtmcli"
 )
 
 func main() {
