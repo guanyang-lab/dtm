@@ -1,0 +1,123 @@
+/*
+ * Copyright (c) 2021 yedf. All rights reserved.
+ * Use of this source code is governed by a BSD-style
+ * license that can be found in the LICENSE file.
+ */
+
+package dtmcli
+
+import (
+	"dtm/dtmcli/dtmimp"
+	"dtm/dtmcli/logger"
+	"fmt"
+	"gorm.io/gorm"
+	"net/url"
+)
+
+// BarrierBusiFunc type for busi func
+type BarrierBusiFunc func(tx *gorm.DB) error
+
+// BranchBarrier every branch info
+type BranchBarrier struct {
+	TransType string
+	Gid       string
+	BranchID  string
+	Op        string
+	BarrierID int
+}
+
+const opMsg = "msg"
+
+func (bb *BranchBarrier) String() string {
+	return fmt.Sprintf("transInfo: %s %s %s %s", bb.TransType, bb.Gid, bb.BranchID, bb.Op)
+}
+
+func (bb *BranchBarrier) newBarrierID() string {
+	bb.BarrierID++
+	return fmt.Sprintf("%02d", bb.BarrierID)
+}
+
+// BarrierFromQuery construct transaction info from request
+func BarrierFromQuery(qs url.Values) (*BranchBarrier, error) {
+	return BarrierFrom(qs.Get("trans_type"), qs.Get("gid"), qs.Get("branch_id"), qs.Get("op"))
+}
+
+// BarrierFrom construct transaction info from request
+func BarrierFrom(transType, gid, branchID, op string) (*BranchBarrier, error) {
+	ti := &BranchBarrier{
+		TransType: transType,
+		Gid:       gid,
+		BranchID:  branchID,
+		Op:        op,
+	}
+	if ti.TransType == "" || ti.Gid == "" || ti.BranchID == "" || ti.Op == "" {
+		return nil, fmt.Errorf("invalid trans info: %v", ti)
+	}
+	return ti, nil
+}
+
+func insertBarrier(tx *gorm.DB, transType string, gid string, branchID string, op string, barrierID string, reason string) (int64, error) {
+	if op == "" {
+		return 0, nil
+	}
+	sql := dtmimp.GetDBSpecial().GetInsertIgnoreTemplate(dtmimp.BarrierTableName+"(trans_type, gid, branch_id, op, barrier_id, reason) values(?,?,?,?,?,?)", "uniq_barrier")
+	tx1 := tx.Exec(sql, transType, gid, branchID, op, barrierID, reason)
+	return tx1.RowsAffected, tx1.Error
+}
+
+// Call 子事务屏障，详细介绍见 https://zhuanlan.zhihu.com/p/388444465
+// tx: 本地数据库的事务对象，允许子事务屏障进行事务操作
+// busiCall: 业务函数，仅在必要时被调用
+func (bb *BranchBarrier) Call(tx *gorm.DB, busiCall BarrierBusiFunc) (rerr error) {
+	bid := bb.newBarrierID()
+	defer dtmimp.DeferDo(&rerr, func() error {
+		return tx.Commit().Error
+	}, func() error {
+		return tx.Rollback().Error
+	})
+	originOp := map[string]string{
+		BranchCancel:     BranchTry,
+		BranchCompensate: BranchAction,
+	}[bb.Op]
+
+	originAffected, oerr := insertBarrier(tx, bb.TransType, bb.Gid, bb.BranchID, originOp, bid, bb.Op)
+	currentAffected, rerr := insertBarrier(tx, bb.TransType, bb.Gid, bb.BranchID, bb.Op, bid, bb.Op)
+	logger.Debugf("originAffected: %d currentAffected: %d", originAffected, currentAffected)
+
+	if rerr == nil && bb.Op == opMsg && currentAffected == 0 { // for msg's DoAndSubmit, repeated insert should be rejected.
+		return ErrDuplicated
+	}
+
+	if rerr == nil {
+		rerr = oerr
+	}
+
+	if (bb.Op == BranchCancel || bb.Op == BranchCompensate) && originAffected > 0 || // null compensate
+		currentAffected == 0 { // repeated request or dangled request
+		return
+	}
+	if rerr == nil {
+		rerr = busiCall(tx)
+	}
+	return
+}
+
+// CallWithDB the same as Call, but with *gorm.DB
+func (bb *BranchBarrier) CallWithDB(db *gorm.DB, busiCall BarrierBusiFunc) error {
+	tx := db.Begin()
+	return bb.Call(tx, busiCall)
+}
+
+// QueryPrepared queries prepared data
+func (bb *BranchBarrier) QueryPrepared(db *gorm.DB) error {
+	_, err := insertBarrier(db, bb.TransType, bb.Gid, "00", "msg", "01", "rollback")
+	var reason string
+	if err == nil {
+		sql := fmt.Sprintf("select reason from %s where gid=? and branch_id=? and op=? and barrier_id=?", dtmimp.BarrierTableName)
+		err = db.Raw(sql, bb.Gid, "00", "msg", "01").Scan(&reason).Error
+	}
+	if reason == "rollback" {
+		return ErrFailure
+	}
+	return err
+}
