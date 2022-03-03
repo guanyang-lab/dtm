@@ -9,9 +9,9 @@ package dtmgimp
 import (
 	context "context"
 
-	"dtm/dtmcli/dtmimp"
-	"dtm/dtmcli/logger"
-	"dtm/dtmgrpc/dtmgpb"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
+	"github.com/guanyang-lab/dtm/dtmcli/logger"
+	"github.com/guanyang-lab/dtm/dtmgrpc/dtmgpb"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"

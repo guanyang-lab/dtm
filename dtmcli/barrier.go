@@ -7,9 +7,9 @@
 package dtmcli
 
 import (
-	"dtm/dtmcli/dtmimp"
-	"dtm/dtmcli/logger"
 	"fmt"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
+	"github.com/guanyang-lab/dtm/dtmcli/logger"
 	"gorm.io/gorm"
 	"net/url"
 )

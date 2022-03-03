@@ -10,9 +10,9 @@ import (
 	context "context"
 	"fmt"
 
-	"dtm/dtmcli/dtmimp"
-	"dtm/dtmgrpc/dtmgimp"
-	"dtm/dtmgrpc/dtmgpb"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
+	"github.com/guanyang-lab/dtm/dtmgrpc/dtmgimp"
+	"github.com/guanyang-lab/dtm/dtmgrpc/dtmgpb"
 	"google.golang.org/protobuf/proto"
 )
 

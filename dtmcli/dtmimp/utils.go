@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"dtm/dtmcli/logger"
 	"github.com/go-resty/resty/v2"
+	"github.com/guanyang-lab/dtm/dtmcli/logger"
 )
 
 // Logf an alias of Infof

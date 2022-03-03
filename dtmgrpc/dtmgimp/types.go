@@ -12,8 +12,8 @@ import (
 	"github.com/dtm-labs/dtmdriver"
 	"time"
 
-	"dtm/dtmcli/dtmimp"
-	"dtm/dtmcli/logger"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
+	"github.com/guanyang-lab/dtm/dtmcli/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"

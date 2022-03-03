@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 	"net/url"
 
-	"dtm/dtmcli/dtmimp"
 	"github.com/go-resty/resty/v2"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
 )
 
 // XaGlobalFunc type of xa global function

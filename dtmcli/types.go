@@ -9,8 +9,8 @@ package dtmcli
 import (
 	"fmt"
 
-	"dtm/dtmcli/dtmimp"
 	"github.com/go-resty/resty/v2"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
 )
 
 // MustGenGid generate a new gid

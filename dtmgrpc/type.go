@@ -9,9 +9,9 @@ package dtmgrpc
 import (
 	context "context"
 
-	"dtm/dtmcli"
-	"dtm/dtmcli/dtmimp"
-	"dtm/dtmgrpc/dtmgimp"
+	"github.com/guanyang-lab/dtm/dtmcli"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
+	"github.com/guanyang-lab/dtm/dtmgrpc/dtmgimp"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

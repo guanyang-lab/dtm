@@ -10,9 +10,9 @@ import (
 	"errors"
 	"gorm.io/gorm"
 
-	"dtm/dtmcli"
-	"dtm/dtmcli/dtmimp"
-	"dtm/dtmgrpc/dtmgimp"
+	"github.com/guanyang-lab/dtm/dtmcli"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
+	"github.com/guanyang-lab/dtm/dtmgrpc/dtmgimp"
 	"google.golang.org/protobuf/proto"
 )
 

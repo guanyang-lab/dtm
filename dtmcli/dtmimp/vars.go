@@ -9,8 +9,8 @@ package dtmimp
 import (
 	"errors"
 
-	"dtm/dtmcli/logger"
 	"github.com/go-resty/resty/v2"
+	"github.com/guanyang-lab/dtm/dtmcli/logger"
 )
 
 // ErrFailure error of FAILURE

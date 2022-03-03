@@ -3,8 +3,8 @@ package dtmcli
 import (
 	"fmt"
 
-	"dtm/dtmcli/logger"
 	"github.com/go-redis/redis/v8"
+	"github.com/guanyang-lab/dtm/dtmcli/logger"
 )
 
 // RedisCheckAdjustAmount check the value of key is valid and >= amount. then adjust the amount

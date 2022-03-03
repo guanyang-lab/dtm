@@ -1,4 +1,4 @@
-module dtm
+module github.com/guanyang-lab/dtm
 
 go 1.17
 

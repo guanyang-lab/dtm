@@ -10,7 +10,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 
-	"dtm/dtmcli/dtmimp"
+	"github.com/guanyang-lab/dtm/dtmcli/dtmimp"
 )
 
 // Msg reliable msg type
